@@ -15,28 +15,31 @@ public:
         if(head == NULL || head->next == NULL)
             return head;
             
-        ListNode *ret = head->next;
+        ListNode *ret = NULL;
         ListNode *p1 = head;
-        ListNode *p2; = head->next;
+        ListNode *p2 = head->next;
         ListNode *start = NULL;
         if(p1 && p2)
         {
             p1->next = p2->next;
             p2->next = p1;
             start = p1;
+            ret = p2;
         }
         while(start->next)
         {
-            p1 = start->next
+            p1 = start->next;
             p2 = p1->next;
             if(p1 && p2)
             {
                 p1->next = p2->next;
                 p2->next = p1;
+                start->next = p2;
                 start = p1;
             }
             else
                 return ret;
         }
+        return ret;
     }
 };
