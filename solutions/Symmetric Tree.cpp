@@ -41,3 +41,54 @@ public:
             return areSymmetric(root->left, root->right);
     }
 };
+
+
+//iterative version
+class Solution {
+public:
+    bool isSymmetric(TreeNode *root) {
+        // Start typing your C/C++ solution below
+        // DO NOT write int main() function
+        if(root == NULL)
+            return true;
+        else
+        {
+            vector<TreeNode*> leftStack;
+            vector<TreeNode*> rightStack;
+            TreeNode *theLeft = root->left;
+            TreeNode *theRight = root->right;
+            
+            while(true)
+            {
+                if(theLeft == NULL && theRight == NULL)
+                {
+                    if(leftStack.size() == 0 && rightStack.size() == 0)
+                        return true;
+                    else if(leftStack.size() != rightStack.size())
+                        return false;
+                    else
+                    {
+                        theLeft = leftStack.back();
+                        leftStack.pop_back();
+                        theRight = rightStack.back();
+                        rightStack.pop_back();
+                    }
+                }
+                else if(theLeft == NULL && theRight != NULL)
+                    return false;
+                else if(theLeft != NULL && theRight == NULL)
+                    return false;
+                else if(theLeft->val != theRight->val)
+                    return false;
+                else
+                {
+                    leftStack.push_back(theLeft->right);
+                    theLeft = theLeft->left;
+                    rightStack.push_back(theRight->left);
+                    theRight = theRight->right;
+                }
+            }
+            return true;
+        }
+    }
+};
