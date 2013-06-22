@@ -1,3 +1,4 @@
+//version that uses two extra arrays
 class Solution {
 public:
     int trap(int A[], int n) {
@@ -25,4 +26,33 @@ public:
         }
         return ret;
     }
+};
+
+//version 2: space: O(1), and time: O(n), why this method work? it's a 
+class Solution {
+public:
+	int trap(int A[], int n) {
+		if(n <= 2) return 0;
+		int leftMax = A[0];
+		int rightMax = A[n-1];
+		int iL = 0;
+		int iR = n-1;
+		int ret = 0;
+		while(iL <= iR)
+		{
+			if(leftMax < rightMax)
+			{
+				leftMax = max(leftMax, A[iL]);
+				ret += leftMax - A[iL];
+				iL++;
+			}
+			else
+			{
+				rightMax = max(rightMax, A[iR]);
+				ret += rightMax - A[iR];
+				iR--;
+			}
+		}
+		return ret;
+	}
 };
