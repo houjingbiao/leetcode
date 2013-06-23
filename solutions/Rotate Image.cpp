@@ -21,3 +21,45 @@ public:
         }
     }
 };
+
+//another version
+void rotate(vector<vector<int> > &matrix) {
+        // Start typing your C/C++ solution below
+        // DO NOT write int main() function
+        int n = matrix.size()-1;
+        for(int x=n/2; x>=0; --x){
+            for(int y=(n-1)/2; y>=0; --y){
+                int cur_x = x,cur_y=y;
+                for(int i=0; i<3; ++i){
+                    int tmp = n-cur_x;
+                    cur_x = cur_y;
+                    cur_y = tmp;
+                    swap(matrix[x][y], matrix[cur_x][cur_y]);
+                }
+            }
+        }
+    }
+
+
+//3rd version
+class Solution {
+public:
+    int offset[3][3] ={{1,1,0},{1,0,1},{0,1,0}}; //abs(n-x-y)
+    void rotate(vector<vector<int> > &matrix) {
+        // Start typing your C/C++ solution below
+        // DO NOT write int main() function
+        int n = matrix.size()-1;
+        for(int x=n/2; x>=0; --x){
+            for(int y=(n-1)/2; y>=0; --y){
+                int cur_x = x,cur_y=y;
+                for(int i=0; i<3; ++i){
+                    cur_x = cur_y;
+                    cur_y = abs(n*offset[i][0]-x*offset[i][1]-y*offset[i][2]);
+                    swap(matrix[x][y], matrix[cur_x][cur_y]);
+                }
+            }
+        }
+    }
+};
+
+//4th: 把脚标的除法计算，换成乘法 2*i < n 而不是 i < n/2
