@@ -6,6 +6,7 @@
 [1. 数数](#数数)  
 [2. 程序设计的训练方法](#程序设计的训练方法)  
 [3. 代码结构](#代码结构)  
+[3+1. 位操作](#位操作)  
 [4. 数据结构](#数据结构)  
 [5. 常用算法思想](#常用算法思想)  
 [6. 一些常识](#一些常识)  
@@ -166,6 +167,152 @@ insert
 For: the loop in which updating counter in a regularity.
 While: users can update the counter more freely
 do… while()  
+
+
+<a name="位操作"></a>
+## 3+1. 位操作 ##
+该部分主要选在matrix67　　　
+本质上讲，每一位能表达的信息量和一个bool变量是一样的，只不过在计算机语言中提供了大量的bit序列操作，这些操作使得程序更加高效。  
+**基本位运算**  
+
+1. and运算：通常用于二进制取位操作，例如判断奇偶数
+2. or运算：通常用于二进制特定位的无条件赋值
+3. xor运算：通常用于对二进制特定一位进行取反操作，异或0都不变，异或1则取反，xor是自己的逆操作，例如加密，swap
+4. not运算：取反，整数的话要注意符号
+5. shl运算：左移操作后面补零
+6. shr运算：右移操作前面补零
+
+
+**复合位操作的威力**  
+    功能               |           示例            |    位运算  
+----------------------+---------------------------+--------------------  
+去掉最后一位 　　| (101101->10110)　|　x shr 1  
+在最后加一个0　　| (101101->1011010)　|　x shl 1  
+在最后加一个1　　| (101101->1011011)　|　x shl 1+1  
+把最后一位变成1　| (101100->101101)          |　x or 1  
+把最后一位变成0　| (101101->101100)          | x or 1-1  
+最后一位取反　　　| (101101->101100)          | x xor 1  
+把右数第k位变成1　| (101001->101101,k=3)      | x or (1 shl (k-1))  
+把右数第k位变成0　| (101101->101001,k=3)      | x and not (1 shl (k-1))  
+右数第k位取反　　| (101001->101101,k=3)      | x xor (1 shl (k-1))  
+取末三位　　　　　| (1101101->101)            | x and 7  
+取末k位　　　　　| (1101101->1101,k=5)       | x and (1 shl k-1)  
+取右数第k位　　　| (1101101->1,k=4)          | x shr (k-1) and 1  
+把末k位变成1　　| (101001->101111,k=4)      | x or (1 shl k-1)  
+末k位取反　　　　| (101001->100110,k=4)      | x xor (1 shl k-1)  
+把右边连续的1变成0　　| (100101111->100100000)    | x and (x+1)  
+把右起第一个0变成1　| (100101111->100111111)    | x or (x+1)  
+把右边连续的0变成1　| (11011000->11011111)      | x or (x-1)  
+取右边连续的1　　　　| (100101111->1111)         | (x xor (x+1)) shr 1  
+去掉右起第一个1的左边　| (100101000->1000)         | x and (x xor (x-1))  
+
+
+**常见例题**　　
+
+1. 二进制中的1有奇数个还是偶数个：　　
+	2. 循环方法  
+	2. 分治（归并）
+    <pre>var
+       x:longint;
+    begin
+       readln(x);
+       x:=x xor (x shr 1);
+       x:=x xor (x shr 2);
+       x:=x xor (x shr 4);
+       x:=x xor (x shr 8);
+       x:=x xor (x shr 16);
+       writeln(x and 1);
+    end.</pre>
+
+2. 计算二进制中的1的个数:分治（归并）
+	<pre>x := (x and $55555555) + ((x shr 1) and $55555555); 
+x := (x and $33333333) + ((x shr 2) and $33333333); 
+x := (x and $0F0F0F0F) + ((x shr 4) and $0F0F0F0F); 
+x := (x and $00FF00FF) + ((x shr 8) and $00FF00FF); 
+x := (x and $0000FFFF) + ((x shr 16) and $0000FFFF); </pre>
+
+3. 二分查找32位整数的前导0个数:二分
+	<pre>int nlz(unsigned x)
+{
+   int n;
+   if (x == 0) return(32);
+   n = 1;
+   if ((x >> 16) == 0) {n = n +16; x = x <<16;}
+   if ((x >> 24) == 0) {n = n + 8; x = x << 8;}
+   if ((x >> 28) == 0) {n = n + 4; x = x << 4;}
+   if ((x >> 30) == 0) {n = n + 2; x = x << 2;}
+   n = n - (x >> 31);
+   return n;
+}
+</pre>
+
+4. 只用位运算来取绝对值  
+答案：假设x为32位整数，则x xor (not (x shr 31) + 1) + x shr 31的结果是x的绝对值
+
+5. 高低位交换
+	<pre>
+var
+   n:dword;
+begin
+   readln( n );
+   writeln( (n shr 16) or (n  shl 16) );
+end.</pre>
+
+6. 二进制逆序
+	<pre>
+var
+   x:dword;
+begin
+   readln(x);
+   x := (x and $55555555) shl  1 or (x and $AAAAAAAA) shr  1;
+   x := (x and $33333333) shl  2 or (x and $CCCCCCCC) shr  2;
+   x := (x and $0F0F0F0F) shl  4 or (x and $F0F0F0F0) shr  4;
+   x := (x and $00FF00FF) shl  8 or (x and $FF00FF00) shr  8;
+   x := (x and $0000FFFF) shl 16 or (x and $FFFF0000) shr 16;
+   writeln(x);
+end.</pre>
+
+**高级题目**
+
+
+1. n皇后问题位运算版  
+	<pre>
+procedure test(row,ld,rd:longint);
+var
+      pos,p:longint;
+begin
+{ 1}  if row<>upperlim then
+{ 2}  begin
+{ 3}     pos:=upperlim and not (row or ld or rd);
+{ 4}     while pos<>0 do
+{ 5}     begin
+{ 6}        p:=pos and -pos;
+{ 7}        pos:=pos-p;
+{ 8}        test(row+p,(ld+p)shl 1,(rd+p)shr 1);
+{ 9}     end;
+{10}  end
+{11}  else inc(sum);
+end;
+</pre>
+
+2.Gray码：
+	翻转对折的效果  
+	000  
+	001  
+	011  
+	010  ↑  
+	……对称线   
+	110  ↓  
+	111  
+	101  
+	100  
+
+两个映射：  
+
+- n阶的Gray码相当于在n维立方体上的Hamilton回路，因为沿着立方体上的边走一步，n维坐标中只会有一个值改变。  
+- Gray码和Hanoi塔问题等价。Gray码改变的是第几个数，Hanoi塔就该移动哪个盘子。比如，3阶的Gray码每次改变的元素所在位置依次为1-2-1-3-1-2-1，这正好是3阶Hanoi塔每次移动盘子编号。
+
+
 
 <a name="数据结构"></a>
 ## 4. 数据结构 ##
@@ -355,6 +502,7 @@ Link-cut Tree
 1.程序员数学  
 2.尹一通组合数学  
 3.leetcode  
+4.http://www.matrix67.com/blog/archives/263  
 
 <a name="My Header"></a>
 ## My Header ##
