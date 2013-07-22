@@ -5,8 +5,13 @@ public:
         // DO NOT write int main() function
         vector<vector<int>> ret;
         vector<int> subset;
-        ret.push_back(subset);
-        int count = 1 << (S.size());
+
+        ret.push_back(subset); //the null set
+		if(S.size() == 0) return ret;
+		
+		ret.push_back(S); //origin set
+        
+		int count = (1 << (S.size()))-1;
         for(int i = 1; i < count; i++)
         {
             subset.clear();
