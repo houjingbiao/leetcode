@@ -1,3 +1,4 @@
+//version 1: using binary code to generate the subsets
 class Solution {
 public:
     vector<vector<int> > subsets(vector<int> &S) {
@@ -31,7 +32,6 @@ public:
 };
 
 //version2: this is a version that just use the index updating
-
 class Solution {
 public:
     vector<vector<int>> subsets(vector<int> &S){
@@ -41,31 +41,25 @@ public:
         if(S.size() == 0)
             return ret;
         
-        for(int len = 1; len < S.size(); len++)
-        {
+        for(int len = 1; len < S.size(); len++){//different length
             subset.clear();
-            vector<int> subsetIdx;
+            vector<int> subsetIdx; 
             
-            for(int i = 0; i < len; i++)
+            for(int i = 0; i < len; i++) //initialize index in the S for each element in subset
                 subsetIdx.push_back(i);
             
-            while(subsetIdx[0]+len-1 < S.size() && subsetIdx[len-1] < S.size())
-            {
+            while(subsetIdx[0]+len-1 < S.size() && subsetIdx[len-1] < S.size()){
                 subset.clear();
                 for(int i = 0; i < len; i++)
                     subset.push_back(S[subsetIdx[i]]);
                 ret.push_back(subset);
                 
                 int m = len-1;
-                for(; m >= 0; m--)
-                {
-                    if(subsetIdx[m]+len-m < S.size())
-                    {
+                for(; m >= 0; m--){  //for each element in the subset
+                    if(subsetIdx[m]+len-m < S.size()){
                         subsetIdx[m]++;
                         for(int k = m+1; k < len; k++)
-                        {
                             subsetIdx[k] = subsetIdx[k-1]+1;
-                        }
                         break;
                     }
                 }
