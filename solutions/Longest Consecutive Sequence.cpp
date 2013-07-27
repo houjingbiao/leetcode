@@ -59,6 +59,7 @@ public:
 				
 			maxLen = maxLen > PS[i].data ? maxLen : PS[i].data;
 		}
+		delete[] PS;
 		return maxLen;
     }
 };
