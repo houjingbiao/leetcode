@@ -13,7 +13,7 @@
 class Solution {
 public:
 	TreeNode *buildTree(vector<int> &preorder, int pre_pos, vector<int> &inorder, int in_pos, int len) {
-		if(len == 0 || pre_pos >= preorder.size() || in_pos >= preorder.size()) return NULL;
+		if(len == 0 || pre_pos >= preorder.size() || in_pos >= inorder.size()) return NULL;
 
 		TreeNode* root = new TreeNode(preorder[pre_pos]);
 		int i = 0;
