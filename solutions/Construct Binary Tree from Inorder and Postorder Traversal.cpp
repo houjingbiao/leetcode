@@ -31,3 +31,35 @@ public:
 		return root;
 	}
 };
+
+
+//version: yinyuxiang
+class Solution {
+public:
+    unordered_set<int> visited;
+    TreeNode *buildTree(int inorder[], int &n, int postorder[], int &m){
+        if(n<0 || m<0 || visited.erase(inorder[n]) > 0){
+            --n;
+            return NULL;
+        }  
+        visited.insert(postorder[m]);
+        TreeNode* node = new TreeNode(postorder[m]);
+        if(postorder[m--] != inorder[n]){
+            node->right = buildTree(inorder, n, postorder, m);
+        }else{
+            --n;
+        }
+        node->left = buildTree(inorder, n, postorder, m);
+        return node;
+    }
+ 
+    TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder) {
+        // Start typing your C/C++ solution below
+        // DO NOT write int main() function
+        if(inorder.size() != postorder.size())
+            return NULL;
+        visited.clear();
+        int n=inorder.size()-1, m=postorder.size()-1;
+        return buildTree(inorder.data(), n, postorder.data(), m);
+    }
+};

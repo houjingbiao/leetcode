@@ -33,3 +33,37 @@ public:
 		return root;
     }
 };
+
+
+
+
+//version: yinyuxiang
+class Solution {
+public:
+    unordered_set<int> visited;
+    TreeNode *buildTree(int preorder[], int &n, int inorder[], int &m, int nlen){
+        if(n>=nlen || m>=nlen || visited.erase(inorder[m]) > 0){
+            ++m;
+            return NULL;
+        }  
+        visited.insert(preorder[n]);
+        TreeNode* node = new TreeNode(preorder[n]);
+        if(preorder[n++] != inorder[m]){
+            node->left = buildTree(preorder, n, inorder, m, nlen);
+        }else{
+            ++m;
+        }
+        node->right = buildTree(preorder, n, inorder, m, nlen);
+        return node;
+    }
+ 
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+        // Start typing your C/C++ solution below
+        // DO NOT write int main() function
+        if(preorder.size() != inorder.size())
+            return NULL;
+        visited.clear();
+        int n=0, m=0;
+        return buildTree(preorder.data(), n, inorder.data(), m, inorder.size());
+    }
+};
