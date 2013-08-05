@@ -32,23 +32,20 @@ public:
 					}while(!path.empty() && (path.top()->right == p || path.top()->right == NULL));
 					if(path.empty()) return false;
 					p = path.top()->right;
-					path.push(path.top()->right);
-					int xxx = p->val;
-					curr_sum += xxx;
+					path.push(p);
+					curr_sum += p->val;
 				}
 			}
 			else{
 				if(path.top()->left != NULL){
 					TreeNode *p = path.top()->left;
 					path.push(path.top()->left);
-					int xxx = p->val;
-					curr_sum += xxx;
+					curr_sum += p->val;
 				}
 				else{
 					TreeNode *p = path.top()->right;
 					path.push(path.top()->right);
-					int xxx = p->val;
-					curr_sum += xxx;
+					curr_sum += p->val;
 				}
 			}
 		}
