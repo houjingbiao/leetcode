@@ -24,35 +24,6 @@ public:
 };
 
 
-//version 2: dp
-class Solution {
-public:
-	bool bfs(int pos, int &step, int A[], int n){
-		step++;
-		if(pos >= n-1){
-			return true;
-		}
-		for(int i = A[pos]; i > 0; i--){
-			if(bfs(pos + i, step, A, n))
-				return true;
-		}
-		return false;
-	}
-    int jump(int A[], int n) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function		
-		if(n <= 1) return 0;
-		int pos = 0;
-		int step = 0;
-		for(int i = A[pos]; i > 0; i--){
-			if(bfs(pos + i, step, A, n))
-				return step;
-		}
-		return 0;
-    }
-};
-
-
 //version 1: dp, only pass small case
 class Solution {
 public:
