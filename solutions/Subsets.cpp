@@ -10,6 +10,8 @@ public:
         ret.push_back(subset); //the null set
 		if(S.size() == 0) return ret;
 		
+		sort(S.begin(), S.end());
+		
 		ret.push_back(S); //origin set
         
 		int count = (1 << (S.size()))-1;
@@ -32,7 +34,7 @@ public:
 };
 
 //version2: this is a version that just use the index updating
-class Solution1 {
+class Solution {
 public:
 	void addToResult(vector<int> &S, vector<int>& subsetIdx,  vector<vector<int>> &ret){
 		vector<int> subset;
@@ -72,6 +74,7 @@ public:
 		ret.push_back(subset);
 		if(S.size() == 0)
 			return ret;
+		sort(S.begin(), S.end());
 
 		for(int len = 1; len < S.size(); len++)//different length
 			generateCombination(S, len, ret);
