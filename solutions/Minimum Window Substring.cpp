@@ -1,17 +1,16 @@
 class Solution {
 public:
 	bool isWindow(int S_sta[], int T_sta[]){
-		for(int i = 0; i < 256; i++){
+		for(int i = 0; i < 256; i++)
 			if(S_sta[i] < T_sta[i]) return false;
-		}
 		return true;
 	}
 	
-	void add(int A[], char c){
+	void add(int A[], const char c){
 		A[c]++;
 	}
 	
-	int get(int A[], char c){
+	int get(int A[], const char c){
 		return A[c];
 	}
 	
