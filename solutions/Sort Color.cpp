@@ -20,3 +20,31 @@ public:
         }
     }
 };
+
+//version 2: two pointers
+class Solution {
+public:
+    void sortColors(int A[], int n) {
+        // Start typing your C/C++ solution below
+        // DO NOT write int main() function
+		int i = 0; 
+		int j = n-1;
+		while(i <= j){
+			while(i < n && A[i] == 0) i++;
+			while(j >= 0 && A[j] != 0) j--;
+			if(i > j) break;
+			int tmp = A[i];
+			A[i++] = A[j];
+			A[j--] = tmp;
+		}
+		j = n-1;
+		while(i <= j){
+			while(i < n && A[i] == 1) i++;
+			while(j >= 0 && A[j] == 2) j--;
+			if(i > j) break;
+			int tmp = A[i];
+			A[i++] = A[j];
+			A[j--] = tmp;
+		}
+    }
+};
