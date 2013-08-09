@@ -1,3 +1,109 @@
+1. 大规模系统设计的问题，比如load balancing, server communication, data 
+consistence等等，而且他会一直深入细节，让你设计一些出错处理什么之类的.
+2. 每个任务之间有dependency，怎么安排任务顺序，使得执行任务i的时候，所有被
+depend的任务已经执行过了。
+3. 用Java设计一个餐馆。有厨师，服务生，客户等等类。设计时我太注意细节了，忘
+了考虑多线程。最后在面试管提醒下大致说了一下多线程实现的方案。
+4. udp和tcp的区别，什么时候用tcp，什么时候用udp。tcp是否允许接受重复packet。
+cookie是什么在进行操作，一个网站最多有几个cookie。
+5. 做一个search engine, 每次搜索到的url肯定会有大量重复。怎么解决?
+6. 实现这个search engine, 你的设备是联在一起的100台电脑，它们可以同时工作。
+可能整个工作过程的某个时段这台机器得到的url set跟另一台机器得到的url set不一
+样，我们又不希望重复劳动。怎么办？
+7. 一个非常sparse的matrix，2^64 × 2^64, 设计一个class，内有get(int x, int y
+), set(int x, int y, int value)。 用什么数据结构存储它？有哪些选择，各自的
+get啊, set的complexity是什么。
+8. Design a class library for writing card games.
+9. 然后让我设计一个分布式文件系统，给定
+path name，可以读写文件。具体的system design这里就不提了。其中一个细节是，给
+定path name，怎么知道哪个node拥有这个文件。我提出需要实现一个lookup function
+，它可以是一个hash function，也可以是一个lookup table。如果是lookup table，
+为了让所有client sync，可以考虑额外做一个lookup cluster。然后Interviewer很纠
+结，既然可以用hash function，为什么还搞得那么复杂。我就告诉他hash function的
+缺点。假定一开始有N个node，hash function把M个文件uniformly distribute到N个
+node上。某天发现capacity不够，加了一个node。首先，要通知所有的client machine
+，configuration 改变了。如果不想重启client machine的process，这不是一个
+trivial job。其次，文件到node的mapping也变了。比如，本来按照hash function，
+一个文件是放在node 1。加了一个node 后，它可能就map到node 2了。平均来说，N/(N
++1)的文件需要move到新的node。这个data migration还是很大的。然后我就提出一些
+hash function的design，可以减少data migration。
+
+最后他提了一个问题，说要实现一个function，要统计distributed file system所有
+目录的大小。前提是，一个目录下的文件可能放在不同的node上。我说这个不就是在每
+个node上统计，然后发到一个merge吗。他说对，但是又问用什么data structure来表
+示。我说这就是hash table，key就是directory name，value就是大小。因为
+directory本身是树结构，这个hash table的key可以用tree来组织。最后让我实现一个
+function，把我说得这个data structure serialize成byte array。因为这个byte
+array就是网络传输的data。我用了depth first traverse。不过等我程序写完，才发
+现，用breath first traverse会更方便，code也会很简洁。
+
+10. 他是要我用pthread实现thread pool，以及thread job management。先是
+define class interface，然后用pthread的mutex和semaphore实现了consumer/
+producer queue。这个queue允许users（producers)加入thread jobs，thread
+managers(consumers)拿出thread jobs，并执行。
+
+11. Consider you are constructing a system for data synchronization, what
+problem will you face, and how you solve it? (I did not do well on this
+question, since for my understanding, the data synchronization is normally
+among process, or among different users, like the one in source code version
+control (Git/repo). I finally understand after 15 mins, he wants to know
+about multi-threads synchronization.
+
+12.  
+然后栽在一道large scale的设计题上。绝对不是所有的面试官都让你随意发挥，有的
+人心里装了一个答案，问的很模糊，你不答到他那个答案他就是不满意。不知道如何解
+决这种情况。大概问答过程如下：
+
+He: how would you design a distributed key-value store
+Me: DHT or just using clusters
+He: details?
+Me: we have a large number of machines. first we use a hash function to
+retrieve machine ID from the key. Then we connect to the machine and use
+another hash function to retrieve the address from the key. Then fetch data
+from that address.
+
+He (seems not satisfied): how much space do you need on the master machine?
+Me: It depends. If we can use a hash function to derive the IP address of
+the machine, we don't need extra space. Otherwise, we need a table to store
+key-IP pairs which is XXX large.
+
+He: say more about how you would get the value on one machine
+Me: we have two levels of cache, then memory, then disk. We go down to lower
+levels if we can't retrieve the value on higher levels. (seems like not
+what he expected)
+
+He: how would you fetch the value on the disk? Please fill in a function
+char* getData(char *key) { ... }
+Me: don't know what he asked is different from what I answered. Ask him a
+lot of questions, but haven't got anything useful
+
+He: Think about what the file system is like
+Me: Talked about things I know about file systems. Ask him whether he would
+like me to write that function based on file system or redesign everything.
+
+He: should be based on file systems.
+Me: go from "/", keep iteratively searching for the current directory using
+the key, until we hit a file not a directory. Then open that file and read
+value and return the value.
+
+整个过程，感觉跟他预想的不一样，跟我预想的也不一样。一直觉得key-value pairs
+应该是用分布式的no sql的DB来实现的，没想到要去读file。另外自己对于disk读取的
+底层API也不了解，所以答题的时候基本凭想象来答，觉得怎样应该算是reasonable的
+。这可能是导致杯具的原因。
+
+有两点教训就是。一，不要觉得自己是new grad就可以只写code，答两道数学题，他们
+真的什么都考，特别是这种large scale的，什么问题都可以问。二，两个面试之间一
+定要take a break，就算不上厕所也要去一趟洗手间让大脑休息一下，我就是到最后两
+个有些晕了，没答好杯具了。
+ DHT B+ tree
+
+ 13. 固定时间内某网站只允许访问有限次，如何让index次数尽可能的少，又不错过更
+新。
+
+ 14. Table reservation system. 并行的, 这个用semaphore或mutex tasking的算法
+不行么?
+
+ 15. Design Patterns 
 # 计算机科学是“数数”的科学 #
 
 
@@ -16,6 +122,59 @@
 
 <a name="注意事项"></a>
 ## 0. 注意事项 ##
+**Powers of 2 table**  
+7     128     
+8     256  
+10    1024   1 thousand    1 k  
+16    65536  
+20    1,048,576   1 million   1MB  
+30    1,073,741,824    1 billion  
+32    4,294,967,296    4 GB  
+40    1,099,511,627,776   1 trillion  1TB  
+
+**1. Ask Questions**: to make sure anything you don't understand fully  
+**2. desgin algorithm**  
+What are its space and time complexity?  
+Waht happens if there is a lot of data?  
+Does your design cause other issues? for example, if you're creating a modified version of a binary search tree, did your design impace the time for insert, find or delete?  
+If there are other issues or limitations, did you make the right trade-off? For which scenarios might the trade-off be less optimal?  
+If they gave you specific data (e.g., mentioned that the data is ages, or in sorted order), have your leveraged that information? Usually there's a reason that an interviewer gave you specific information.
+
+**3. Pseudocode**  
+
+**4. Code**  
+You don't need to rush through your code; in fact, this will most hurt you. Just go at a nice, slow, methodical pace. Also, remember this advice:  
+Use Data Structures Generously: where relevant, use a good structure or define your own.  
+Don't Crowd your coding: 
+
+**5. Test**  
+Extreme cases:  0, negative, null, maximums, minimums  
+User error: what happens if the user passes in null or a negative value?  
+General cases: test the normal case  
+
+if the algorithm is complicated or highly numerical (bit shifting, arithmetic, etc.), consider testing while you're writing the code rather than just at the end.  
+
+
+1. exemplify
+2. Pattern Matching: Under the Pattern Matching approach, we consider what problems the algorithm is similar to and try to modify the solution to the related problem to develop an algorithm for this problem.
+3. simplify and generalize
+4. Base case and build
+5. Data Structure Brainstorm
+
+good code:
+1. correct
+2. efficient
+3. simple
+4. readable
+5. maintainable
+
+use data structure gnenrously  
+Appropriate code reuse  
+Modular  
+Flexible and Robust: using variables or using templates/generics to solve a problem  
+Error Checking: assumptions about the input,   
+
+
 **概述**  
 写完一段代码之后，自己先检查错误，不要完全指望IDE  
 
@@ -126,9 +285,6 @@ insert
 
 <a name="程序设计的训练方法"></a>
 ## 2. 程序设计的训练方法 ##
-
-
-
 **画图：**人的大脑对有形的事物更有感觉  
 
 一个很好的方法是画出图来，从图上看，问题有几个维度，从不同的维度开始解题
@@ -144,6 +300,11 @@ insert
 这种算法的复杂度  
 题目能否推广？  
 每道题目的实际应用场景  
+
+1. try to solve the problem on your own. I mean, really try to solve it. Many questions are designed to be tough - that's ok! When you're solving a problem, make sure to think about the space and time efficiency. Ask yourself if you could improve the time efficiency by reducing the space efficiency, or vice versa.
+2. Write the code for the algorithm on paper. 
+3. Test you code-on paper. This means testing the general cases, base cases, error cases, and so on. You'll need to do this during your interview, so it's best to practice this in advance.
+4. Type your papaer code as-is into a computer. You will probably make a bunch of mistake. Start a list of all the error you make so that you can keep these in mind in the real interview.
 
 <a name="代码结构"></a>
 ## 3. 代码结构 ##
@@ -379,6 +540,31 @@ end.
 
 <a name="数据结构"></a>
 ## 4. 数据结构 ##
+For each of the topic below, make sure you understand how to use and implement them and, where applicable, what the space and time complexity is.
+For the data structures and algorithms, be sure to practice implementing them from scratch. You might be asked to implement one directly, or you might be asked to implement a modification of one. Either way, the more comfortable you are with implementations, the better.
+### data structure ###
+- Linked Lists
+- Binary Trees
+- Tries
+- Stacks
+- Queues
+- Vectors/Arraylists
+- Hash Tables
+### algorithms ###
+- Breadth First Search
+- Depth First Search
+- Binary Search
+- Merge Sort
+- Quick Sort
+- Tree Insert / Find / e.t.c
+### concepts ###
+- Bit manipulation
+- Singleton Design Pattern
+- Factory Design Pattern
+- Memory (stack vs heap)
+- Recursion
+- Big-O time
+
 **基本数据结构**  
 能够快速实现堆，栈等基本数据结构，而不是依赖于STL
 需要对每种数据结构的特点有很深的认识，很熟练的操作
