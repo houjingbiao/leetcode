@@ -1,3 +1,40 @@
+//version 3: from liancheng
+#include <algorithm>
+#include <cctype>
+#include <iostream>
+#include <iterator>
+
+using namespace std;
+
+class Solution {
+public:
+    bool isPalindrome(string const& s) {
+        auto pred = [] (char ch) { return isalnum (ch); };
+        auto left = find_if (s.begin (), s.end (), pred);
+        auto right = find_if (s.rbegin (), s.rend (), pred);
+
+        while (left < prev (right.base ())) {
+            if (tolower (*left) != tolower (*right)) {
+                return false;
+            }
+
+            left = find_if (left + 1, s.end (), pred);
+            right = find_if (right + 1, s.rend (), pred);
+        }
+
+        return true;
+    }
+};
+
+int main (int argc, char* argv []) {
+    for (string s; getline (cin, s); ) {
+        cout << Solution ().isPalindrome (s) << endl;
+    }
+
+    return 0;
+}
+
+//version: improve
 class Solution {
 public:
 	bool isAlphaNumeral(char ch){
