@@ -1,4 +1,4 @@
-//version 5: java from fengge
+//version 6: java from fengge
 public int find(int[] A, int key) {
     if (A == null || A.length == 0) return -1;
     int low = 0, high = A.length-1; //the interval is [low, high]
@@ -23,6 +23,28 @@ public int find(int[] A, int key) {
     }
     return -1;
 }
+
+//version 5: 直接从设置为b = mid；来思考
+class Solution {
+public:
+    int search(int A[], int n, int target) {
+		if(n == 0)  return -1;
+		int b = -1;
+		int e = n - 1;//hjb: the interval is (b, e]
+		while(e-b > 1){
+			int mid = b+(e-b)/2;//int mid = (b+1)/2 + e/2;
+			if( (A[mid] <= A[e] && target > A[mid] && target <= A[e])
+				|| (A[b+1] <= A[mid] && (A[mid] < target || target < A[b+1])))
+				b = mid;
+			else
+				e = mid;
+		}
+		if(A[++b] == target)
+			return b;
+		return -1;
+    }
+};
+
 
 //version 4:
 class Solution {
